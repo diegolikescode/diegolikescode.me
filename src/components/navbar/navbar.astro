@@ -3,28 +3,33 @@ import Container from "@components/container.astro";
 import Link from "@components/ui/link.astro";
 import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
+import { Image } from "@astrojs/image/components";
+
+import GithubLogo from "../../assets/github-logo.svg";
+import LinkedIn from "../../assets/linkedin-logo.svg";
+import Twitter from "../../assets/twitter-logo.svg";
 
 const menuitems = [
   {
-    title: "Features",
-    path: "#",
-    children: [
-      { title: "Action", path: "/" },
-      { title: "Another action", path: "#" },
-      { title: "Dropdown Submenu", path: "#" },
-      { title: "404 Page", path: "/404" },
-    ],
+    // title: "Features",
+    // path: "#",
+    // children: [
+    //   { title: "Action", path: "/" },
+    //   { title: "Another action", path: "#" },
+    //   { title: "Dropdown Submenu", path: "#" },
+    //   { title: "404 Page", path: "/404" },
+    // ],
   },
   {
-    title: "Pricing",
+    title: "Process (todo)",
     path: "/pricing",
   },
   {
-    title: "About",
+    title: "About (todo)",
     path: "/about",
   },
   {
-    title: "Blog",
+    title: "Projects (todo)",
     path: "/blog",
   },
   {
@@ -38,11 +43,35 @@ const menuitems = [
   <header class="flex flex-col lg:flex-row justify-between items-center my-5">
     <Astronav>
       <div class="flex w-full lg:w-auto items-center justify-between">
-        <a href="/" class="text-lg"
-          ><span class="font-bold text-slate-800">Astro</span><span
-            class="text-slate-500">ship</span
-          >
-        </a>
+        <div></div>
+        <div class="flex flex-col">
+          <a href="/" class="text-lg"
+            ><span class="font-bold text-slate-800 text-2xl"
+              >DiegoLikesCode</span
+            >
+            <div class="flex gap-4">
+              <a
+                class="lg:hidden"
+                href="https://github.com/diegolikescode"
+                target="_blank">
+                <Image src={GithubLogo} alt="my GitHub profile" />
+              </a>
+              <a
+                class="lg:hidden"
+                href="https://twitter.com/diegolikescode"
+                target="_blank">
+                <Image src={Twitter} alt="my Twitter profile" />
+              </a>
+              <a
+                class="lg:hidden"
+                href="https://www.linkedin.com/in/diegolikescode/"
+                target="_blank">
+                <Image src={LinkedIn} alt="my LinkedIn profile" />
+              </a>
+            </div>
+          </a>
+          <!-- <span class="text-slate-500">code</span> -->
+        </div>
         <div class="block lg:hidden">
           <MenuIcon class="w-4 h-4 text-gray-800" />
         </div>
@@ -73,16 +102,25 @@ const menuitems = [
             ))
           }
         </ul>
-        <div class="lg:hidden flex items-center mt-3 gap-4">
-          <Link href="#" style="muted" block size="md">Log in</Link>
-          <Link href="#" size="md" block>Sign up</Link>
-        </div>
       </MenuItems>
     </Astronav>
     <div>
       <div class="hidden lg:flex items-center gap-4">
-        <a href="#">Log in</a>
-        <Link href="#" size="md">Sign up</Link>
+        <a href="https://github.com/diegolikescode" target="_blank">
+          <Image src={GithubLogo} alt="my GitHub profile" />
+        </a>
+        <a href="https://twitter.com/diegolikescode" target="_blank">
+          <Image src={Twitter} alt="my Twitter profile" />
+        </a>
+        <a href="https://www.linkedin.com/in/diegolikescode/" target="_blank">
+          <Image src={LinkedIn} alt="my LinkedIn profile" />
+        </a>
+        <!-- <Link href="#" size="md">
+          <Image src={Twitter} alt='my Twitter profile' />
+        </Link>
+        <Link href="#" size="md">
+          <Image src={LinkedIn} alt='my LinkedIn profile'/>
+        </Link> -->
       </div>
     </div>
   </header>

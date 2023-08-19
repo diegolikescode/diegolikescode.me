@@ -3,6 +3,8 @@ import { Picture } from "@astrojs/image/components";
 import heroImage from "assets/hero.png";
 import Link from "@components/ui/link.astro";
 import { Icon } from "astro-icon";
+import { Image } from "@astrojs/image/components";
+import AstroLogo from "@assets/astro-logo.svg";
 ---
 
 <main
@@ -21,22 +23,23 @@ import { Icon } from "astro-icon";
   <div>
     <h1
       class="text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter">
-      Marketing website done with Astro
+      Hey hey people, Diego here
     </h1>
     <p class="text-lg mt-4 text-slate-600 max-w-xl">
-      Astroship is a starter template for startups, marketing websites & landing
+      From Pixels to Databases, I'm a Full Stack Web Developer based on
+      Florianópolis, Brasil.
+      <!-- Astroship is a starter template for startups, marketing websites & landing
       pages.<wbr /> Built with Astro.build and TailwindCSS. You can quickly create
-      any website with this starter.
+      any website with this starter. -->
     </p>
     <div class="mt-6 flex flex-col sm:flex-row gap-3">
-      <Link
+      <!-- <Link
         href="#"
         href="https://web3templates.com/templates/astroship-starter-website-template-for-astro"
         target="_blank"
         class="flex gap-1 items-center justify-center"
         rel="noopener">
         <Icon class="text-white w-5 h-5" name="bx:bxs-cloud-download" />
-
         Download for Free
       </Link>
       <Link
@@ -48,7 +51,11 @@ import { Icon } from "astro-icon";
         target="_blank">
         <Icon class="text-black w-4 h-4" name="bx:bxl-github" />
         GitHub Repo
-      </Link>
+      </Link> -->
+      <h2 class="text-2xl font-bold xl:tracking-tighter">
+        Built and mainteined with love and
+      </h2>
+      <Image src={AstroLogo} alt='Astro' />
     </div>
   </div>
 </main>
