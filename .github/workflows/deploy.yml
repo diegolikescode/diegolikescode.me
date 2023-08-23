@@ -15,10 +15,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: checkout repo with git
-                uses: actions/checkout@v3
+              uses: actions/checkout@v3
             - name: install, build and upload
-                uses: withastro/actions@v0
-    
+              uses: withastro/actions@v0
+
     deploy:
         need: build
         runs-on: ubuntu-latest
@@ -27,5 +27,5 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
         steps:
             - name: deploy to GitHub Pages
-                id: deployment
-                uses: actions/deploy-pages@v1
+              id: deployment
+              uses: actions/deploy-pages@v1
