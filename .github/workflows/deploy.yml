@@ -17,7 +17,7 @@ jobs:
             - name: checkout repo with git
               uses: actions/checkout@v3
             - name: install, build and upload
-              uses: withastro/actions@v0
+              uses: withastro/action@v0
 
     deploy:
         needs: build
