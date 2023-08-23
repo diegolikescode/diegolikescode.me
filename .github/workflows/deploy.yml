@@ -15,9 +15,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: checkout repo with git
-                user: actions/checkout@v3
+                uses: actions/checkout@v3
             - name: install, build and upload
-                user: withastro/actions@v0
+                uses: withastro/actions@v0
     
     deploy:
         need: build
