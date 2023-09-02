@@ -8,3 +8,4 @@
 - [ ] ensure that 2 or more players can play the game at the same URL
 - [ ] make the server available as a ``npm`` lib
 - [ ] deploy
+- [ ] write about it 
