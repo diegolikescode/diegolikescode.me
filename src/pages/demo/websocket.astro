@@ -96,21 +96,38 @@ for (let i = 0; i < matrixH; i++) {
     </Container>
 </Layout>
 
+<!--
+# TODO
+
+- when "new game" reset the matrix
+    - if there is a game, delete in the server
+    - if there is other player, he must be deleted with the game
+
+- when "exit game" reset the matrix
+    - if there is a game, delete in the server
+    - if there is other player, he must be deleted with the game
+
+- when "join game" gets the matrix as it is in the moment of the game
+
+- make both players distinct by its colors
+
+- validate when a player has won
+
+- learn to keep state of client and game ID when refresh page (must be on some Cookie)
+-->
 <script define:vars={{ fullMatrix }}>
 // ball animation
-fullMatrix[0].map((r, col) => {
+fullMatrix[0].map((_, col) => {
     const colBtn = document.getElementById(`btn-${col}`)
     colBtn.addEventListener('click', () => {
         for (let row = fullMatrix.length - 1; row >= 0; row--) {
             const curTuple = fullMatrix[row][col]
-            console.log(curTuple)
+
             if(curTuple['ball'] != '') {
                 continue
             }
-            // adicionar a cor do botão na propriedade ball da tupla
-            // remover o display: none (hidden) das classes da bola
-            curTuple['ball'] = 'blue'
 
+            curTuple['ball'] = 'blue'
             document.getElementById(`ball-row${row}-col${col}`).classList.remove('hidden')
             const ball = document.getElementById(`ball-row${row}-col${col}`)
             ball?.classList.add('animate')
@@ -121,13 +138,13 @@ fullMatrix[0].map((r, col) => {
 })
 
 fullMatrix.map((r, row) => {
-    r.map((t, col) => {
+    r.map((_, col) => {
         document.addEventListener('DOMContentLoaded', () => {
             const ballTuple = document.getElementById(`tuple-${row}-${col}`)
             const positionYTuple = ballTuple.getBoundingClientRect().top
 
             const ball = document.getElementById(`ball-row${row}-col${col}`)
-            ball.style.setProperty('--final-pos', `${positionYTuple}px`)
+            ball.style.setProperty('--final-pos', `${positionYTuple+8}px`)
         })
     })
 })
