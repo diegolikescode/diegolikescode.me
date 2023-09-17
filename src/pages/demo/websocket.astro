@@ -65,13 +65,22 @@ for (let i = 0; i < matrixH; i++) {
             </div>
             <Button id="newGame">New Game</Button>
             <Button id="exitGame">Exit Game</Button>
-            <div id="game-container" class="flex flex-col justify-center items-center mt-4">
-                <div class="flex flex-row justify-center items-center w-full between mb-1">
-                    {fullMatrix[0].map((t, i) =>
-                        <div class="w-16 h-16 flex items-center justify-center">
-                           <button id={`btn-${i}`} class="w-14 h-14 rounded-md bg-black text-white">ball!</button>
-                        </div>
-                    )}
+            <div
+                id="game-container"
+                class="flex flex-col justify-center items-center mt-4">
+                <div
+                    class="flex flex-row justify-center items-center w-full between mb-1">
+                    {
+                        fullMatrix[0].map((t, i) => (
+                            <div class="w-16 h-16 flex items-center justify-center">
+                                <button
+                                    id={`btn-${i}`}
+                                    class="w-14 h-14 rounded-md bg-black text-white">
+                                    ball!
+                                </button>
+                            </div>
+                        ))
+                    }
                 </div>
                 <div id="game-board" class="">
                     {
@@ -114,8 +123,11 @@ for (let i = 0; i < matrixH; i++) {
 - validate when a player has won
 
 - learn to keep state of client and game ID when refresh page (must be on some Cookie)
+    - refresh no token e reseta o clientID pra n mudar nos próximos 5mins
 -->
-<script define:vars={{ fullMatrix }}>
+<script src="../../utils/cookies" is:inline></script>
+<script define:vars={{ fullMatrix}}>
+console.log(setCookie)
 // ball animation
 fullMatrix[0].map((_, col) => {
     const colBtn = document.getElementById(`btn-${col}`)
@@ -123,12 +135,14 @@ fullMatrix[0].map((_, col) => {
         for (let row = fullMatrix.length - 1; row >= 0; row--) {
             const curTuple = fullMatrix[row][col]
 
-            if(curTuple['ball'] != '') {
+            if (curTuple['ball'] != '') {
                 continue
             }
 
             curTuple['ball'] = 'blue'
-            document.getElementById(`ball-row${row}-col${col}`).classList.remove('hidden')
+            document
+                .getElementById(`ball-row${row}-col${col}`)
+                .classList.remove('hidden')
             const ball = document.getElementById(`ball-row${row}-col${col}`)
             ball?.classList.add('animate')
 
@@ -144,18 +158,22 @@ fullMatrix.map((r, row) => {
             const positionYTuple = ballTuple.getBoundingClientRect().top
 
             const ball = document.getElementById(`ball-row${row}-col${col}`)
-            ball.style.setProperty('--final-pos', `${positionYTuple+8}px`)
+            ball.style.setProperty('--final-pos', `${positionYTuple + 8}px`)
         })
     })
 })
 
 let clientId = null
 let gameId = null
+
+/**
+ * websocket stuff
+ */
 const ws = new WebSocket('ws://localhost:6969')
 document.getElementById('newGame')?.addEventListener('click', (_) => {
     const payload = {
         method: 'create',
-        clientId: clientId,
+        clientId,
     }
 
     ws.send(JSON.stringify(payload))
@@ -200,20 +218,21 @@ ws.onmessage = (msg) => {
                     ? `your game ID is: ${gameId}`
                     : 'press "new game" to get your game ID'
             h1GameId.innerHTML = phraseGame
+            setCookie('gameId', gameId, 20)
         }
     }
 
     if (res.method === 'join') {
         console.log(res)
         // gameId = res.game.id
-        // console.log(res)
-        // if (h1GameId !== null) {
-        //     const phraseGame =
-        //         gameId !== null
-        //             ? `your game ID is: ${gameId}`
-        //             : 'press "new game" to get your game ID'
-        //     h1GameId.innerHTML = phraseGame
-        // }
+            // console.log(res)
+            // if (h1GameId !== null) {
+            //     const phraseGame =
+            //         gameId !== null
+            //             ? `your game ID is: ${gameId}`
+            //             : 'press "new game" to get your game ID'
+            //     h1GameId.innerHTML = phraseGame
+            // }
+        }
     }
-}
 </script>
