@@ -4,6 +4,8 @@ import image from '@astrojs/image'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 
+import react from '@astrojs/react'
+
 // https://astro.build/config
 export default defineConfig({
     site: 'https://diegolikescode.me',
@@ -14,6 +16,7 @@ export default defineConfig({
         }),
         mdx(),
         sitemap(),
+        react({ experimentalReactChildren: true }),
     ],
     experimental: {
         viewTransitions: true,

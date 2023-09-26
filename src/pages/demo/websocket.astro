@@ -2,237 +2,50 @@
 import Layout from '@layouts/Layout.astro'
 import Container from '@components/container.astro'
 import Sectionhead from '@components/sectionhead.astro'
+import Game from '@components/websocket-game/game'
 import Button from '@components/ui/button.astro'
 
-const matrixW = 6
-const matrixH = 7
+import {generateUUID} from '@utils/generate-uuid'
 
-const fullMatrix = new Array(matrixH)
-    .fill(null)
-    .map(() => new Array(matrixW).fill(null))
-
-for (let i = 0; i < matrixH; i++) {
-    for (let j = 0; j < matrixW; j++) {
-        fullMatrix[i][j] = {
-            ball: '', // '' | 'blue' | 'red'
-        }
-    }
-}
+const clientID = generateUUID()
 ---
-
-<style>
-    .ball-animation {
-        /* transform: translateX(50%); */
-        transition: top 2s ease-in-out;
-    }
-
-    @keyframes move-ball {
-        0% {
-            top: -50px;
-        }
-        100% {
-            /* dinamic, based on the final position of each ball */
-            top: var(--final-pos, 100px);
-        }
-    }
-    .ball-animation.animate {
-        animation: move-ball 4s ease-in-out;
-    }
-</style>
 
 <Layout title="Websocket">
     <Container>
         <Sectionhead>
             <Fragment slot="title">Websocket multiplayer game demo</Fragment>
             <Fragment slot="desc">
-                A simple game to showcase the use of native Websockets in NodeJS
+                A simple game to showcase the use of Websockets in NodeJS
             </Fragment>
         </Sectionhead>
-        <main class="mt-16">
-            <h1 id="clientId"></h1>
-            <h1 id="gameId">
-                press "new game" to get your game ID or Join someone else's game
-                with "Join Game"
-            </h1>
-            <div class="flex gap-2">
-                <input
-                    type="text"
-                    placeholder="Your game ID"
-                    id="inputGameId"
-                    class="rounded-md"
-                />
-                <Button id="joinGameBtn" class="rounded-md">Join Game</Button>
-            </div>
-            <Button id="newGame">New Game</Button>
-            <Button id="exitGame">Exit Game</Button>
-            <div
-                id="game-container"
-                class="flex flex-col justify-center items-center mt-4">
-                <div
-                    class="flex flex-row justify-center items-center w-full between mb-1">
-                    {
-                        fullMatrix[0].map((t, i) => (
-                            <div class="w-16 h-16 flex items-center justify-center">
-                                <button
-                                    id={`btn-${i}`}
-                                    class="w-14 h-14 rounded-md bg-black text-white">
-                                    ball!
-                                </button>
-                            </div>
-                        ))
-                    }
+        <Game client:load clientID={clientID}>
+            <div slot='menu'>
+                    <h1 id="clientId">{clientID}</h1>
+                <h1 id="gameId">
+                    press "new game" to get your game ID or Join someone else's game
+                    with "Join Game"
+                </h1>
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Your game ID"
+                        id="inputGameId"
+                        class="rounded-md"
+                    />
+                    <Button id="joinGameBtn" class="rounded-md">Join Game</Button>
                 </div>
-                <div id="game-board" class="">
-                    {
-                        fullMatrix.map((row, idx) => (
-                            <div id={String(idx)} class="flex flex-row w-auto">
-                                {row.map((_, idxTuple) => (
-                                    <div
-                                        id={`tuple-${idx}-${idxTuple}`}
-                                        class="flex justify-center items-center w-16 h-16 border-black border-2">
-                                        <div
-                                            id={`ball-row${idx}-col${idxTuple}`}
-                                            class="w-12 h-12 bg-black rounded-full absolute ball-animation hidden"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        ))
-                    }
-                </div>
+                <Button id="newGame">New Game</Button>
+                <Button id="exitGame">Exit Game</Button>
             </div>
-        </main>
+        </Game>
     </Container>
 </Layout>
 
-<!--
-# TODO
-
-- when "new game" reset the matrix
-    - if there is a game, delete in the server
-    - if there is other player, he must be deleted with the game
-
-- when "exit game" reset the matrix
-    - if there is a game, delete in the server
-    - if there is other player, he must be deleted with the game
-
-- when "join game" gets the matrix as it is in the moment of the game
-
-- make both players distinct by its colors
-
-- validate when a player has won
-
-- learn to keep state of client and game ID when refresh page (must be on some Cookie)
-    - refresh no token e reseta o clientID pra n mudar nos próximos 5mins
--->
-<script src="../../utils/cookies" is:inline></script>
-<script define:vars={{ fullMatrix}}>
-console.log(setCookie)
-// ball animation
-fullMatrix[0].map((_, col) => {
-    const colBtn = document.getElementById(`btn-${col}`)
-    colBtn.addEventListener('click', () => {
-        for (let row = fullMatrix.length - 1; row >= 0; row--) {
-            const curTuple = fullMatrix[row][col]
-
-            if (curTuple['ball'] != '') {
-                continue
-            }
-
-            curTuple['ball'] = 'blue'
-            document
-                .getElementById(`ball-row${row}-col${col}`)
-                .classList.remove('hidden')
-            const ball = document.getElementById(`ball-row${row}-col${col}`)
-            ball?.classList.add('animate')
-
-            break
-        }
-    })
+<script>
+const newGameBtn = document.getElementById('newGame')
+newGameBtn?.addEventListener('click', (ev) => {
+    console.log(ev)
+    window.newGame = 'xama'
 })
-
-fullMatrix.map((r, row) => {
-    r.map((_, col) => {
-        document.addEventListener('DOMContentLoaded', () => {
-            const ballTuple = document.getElementById(`tuple-${row}-${col}`)
-            const positionYTuple = ballTuple.getBoundingClientRect().top
-
-            const ball = document.getElementById(`ball-row${row}-col${col}`)
-            ball.style.setProperty('--final-pos', `${positionYTuple + 8}px`)
-        })
-    })
-})
-
-let clientId = null
-let gameId = null
-
-/**
- * websocket stuff
- */
-const ws = new WebSocket('ws://localhost:6969')
-document.getElementById('newGame')?.addEventListener('click', (_) => {
-    const payload = {
-        method: 'create',
-        clientId,
-    }
-
-    ws.send(JSON.stringify(payload))
-})
-
-document.getElementById('joinGameBtn')?.addEventListener('click', (_) => {
-    gameId = document.getElementById('inputGameId')?.value || ''
-    if (gameId === null) {
-        return
-    }
-
-    const payload = {
-        method: 'join',
-        gameId,
-        clientId,
-    }
-
-    ws.send(JSON.stringify(payload))
-})
-
-ws.onmessage = (msg) => {
-    const res = JSON.parse(msg.data)
-    if (res.method === 'connect') {
-        clientId = res.clientId
-        const h1ClientId = document.getElementById('clientId')
-        if (h1ClientId !== null) {
-            const phraseClient =
-                clientId !== null
-                    ? `your client ID is: ${clientId}`
-                    : 'press "new game" to get your client ID'
-            h1ClientId.innerHTML = phraseClient
-        }
-    }
-
-    if (res.method === 'create') {
-        const h1GameId = document.getElementById('gameId')
-        gameId = res.game.id
-        console.log(res)
-        if (h1GameId !== null) {
-            const phraseGame =
-                gameId !== null
-                    ? `your game ID is: ${gameId}`
-                    : 'press "new game" to get your game ID'
-            h1GameId.innerHTML = phraseGame
-            setCookie('gameId', gameId, 20)
-        }
-    }
-
-    if (res.method === 'join') {
-        console.log(res)
-        // gameId = res.game.id
-            // console.log(res)
-            // if (h1GameId !== null) {
-            //     const phraseGame =
-            //         gameId !== null
-            //             ? `your game ID is: ${gameId}`
-            //             : 'press "new game" to get your game ID'
-            //     h1GameId.innerHTML = phraseGame
-            // }
-        }
-    }
 </script>
+
