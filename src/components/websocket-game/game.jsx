@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import './game-styles.css'
-import { newWebSocketConn, onMessageGame, parseStringToJson, createGame } from "@utils/game-websocket"
+import { newWebSocketConn, onMessageGame, parseStringToJson, emitCreateGame} from "@utils/game-websocket"
+import ButtonJsx from "./button"
+import { getCookie, setCookie } from "@utils/cookies"
 
 /**
 ##### TODO ####
@@ -25,8 +27,9 @@ import { newWebSocketConn, onMessageGame, parseStringToJson, createGame } from "
  */
 
 
-const Game = function ({ menu, clientID }) {
+const Game = function (props) {
     console.log('rendered')
+    console.log(props)
 
     let webSocket = {}
 
@@ -36,6 +39,8 @@ const Game = function ({ menu, clientID }) {
         new Array(matrixH).fill(null)
             .map(() => new Array(matrixW).fill({ball: ''}))
     )
+    const [clientID, setCliendID] = useState('')
+    const [gameID, setGameID] = useState('')
 
     const animationStyle = {
         transition: 'top 2s ease-in-out',
@@ -56,6 +61,15 @@ const Game = function ({ menu, clientID }) {
                 ball?.style.setProperty('--final-pos', `${tuplePos + 8}px`)
             })
         })
+
+        const cookieClientID = getCookie('clientID')
+        if(!cookieClientID) {
+            console.log('cookiezada',cookieClientID)
+            const newClientID = generateUUID()
+            // setCliendID(newClientID)
+            setCookie(newClientID)
+        }
+
         webSocket = newWebSocketConn('ws://localhost', '6969')
 
         webSocket.onmessage = (msg) => {
@@ -69,10 +83,6 @@ const Game = function ({ menu, clientID }) {
         }
     }, [])
 
-    const createGame = () => {
-        createGame(webSocket, clientID)
-    }
-
     const handlePlayerRound = (col, playerColor) => {
         const newMatrix = [...currentMatrix]
 
@@ -85,9 +95,34 @@ const Game = function ({ menu, clientID }) {
         }
     }
 
+    const onNewGameClick = () => {
+        emitCreateGame(webSocket)
+        console.log('emited')
+
+    }
+
     return (
         <main className="mt-16">
-            {menu}
+            <div>
+                <h1 id="clientId">ClientID: haha</h1>
+                <h1 id="gameId">
+                    press "new game" to get your game ID or Join someone else's game
+                    with "Join Game"
+                </h1>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Your game ID"
+                        id="inputGameId"
+                        className="rounded-md pl-2"
+                    />
+                    <ButtonJsx id="joinGameBtn" text="Join Game">Join Game</ButtonJsx>
+                </div>
+                <div className="flex gap-2 mt-2">
+                    <ButtonJsx id="newGame" text="New Game" onClick={onNewGameClick}>New Game</ButtonJsx>
+                    <ButtonJsx id="exitGame" text="Exit Game">Exit Game</ButtonJsx>
+                </div>
+            </div>
             <div id="game-container" className="flex flex-col justify-center items-center mt-4">
                 <div className="flex flex-row justify-center items-center w-full between mb-1">
                     {
@@ -96,7 +131,7 @@ const Game = function ({ menu, clientID }) {
                                 <button
                                     key={i}
                                     className="w-14 h-14 rounded-md bg-black text-white"
-                                     onClick={() => handlePlayerRound(i, 'red')}
+                                    onClick={() => handlePlayerRound(i, 'red')}
                                 >
                                     ball!
                                 </button>

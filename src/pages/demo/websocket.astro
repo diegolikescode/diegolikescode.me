@@ -3,11 +3,6 @@ import Layout from '@layouts/Layout.astro'
 import Container from '@components/container.astro'
 import Sectionhead from '@components/sectionhead.astro'
 import Game from '@components/websocket-game/game'
-import Button from '@components/ui/button.astro'
-
-import {generateUUID} from '@utils/generate-uuid'
-
-const clientID = generateUUID()
 ---
 
 <Layout title="Websocket">
@@ -18,34 +13,7 @@ const clientID = generateUUID()
                 A simple game to showcase the use of Websockets in NodeJS
             </Fragment>
         </Sectionhead>
-        <Game client:load clientID={clientID}>
-            <div slot='menu'>
-                    <h1 id="clientId">{clientID}</h1>
-                <h1 id="gameId">
-                    press "new game" to get your game ID or Join someone else's game
-                    with "Join Game"
-                </h1>
-                <div class="flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="Your game ID"
-                        id="inputGameId"
-                        class="rounded-md"
-                    />
-                    <Button id="joinGameBtn" class="rounded-md">Join Game</Button>
-                </div>
-                <Button id="newGame">New Game</Button>
-                <Button id="exitGame">Exit Game</Button>
-            </div>
-        </Game>
+        <Game client:load></Game>
     </Container>
 </Layout>
-
-<script>
-const newGameBtn = document.getElementById('newGame')
-newGameBtn?.addEventListener('click', (ev) => {
-    console.log(ev)
-    window.newGame = 'xama'
-})
-</script>
 

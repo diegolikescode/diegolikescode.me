@@ -1,5 +1,7 @@
 // import {Server} from 'ws'
 
+import { setCookie } from "./cookies"
+
 /**
  * @param {string} host
  * @param {string} port
@@ -12,10 +14,9 @@ export const newWebSocketConn = (host, port) => new WebSocket(`${host}:${port}`)
  * @param {WebSocket} ws
  * @param {string} clientID
  */
-export const createGame = (ws, clientID) => {
+export const emitCreateGame = (ws, clientID) => {
     const payload = {
         method: 'create',
-        clientID
     }
 
     sendJsonAsString(ws, payload)
@@ -26,7 +27,7 @@ export const createGame = (ws, clientID) => {
  * @description event emited only by the frontend, it signals the backend that the player (clientID) is
  * joining a game already created
  */
-const join = (ws, clientID, gameID) => {
+const emitJoin = (ws, clientID, gameID) => {
     if(gameID === null) {
         return
     }
@@ -40,7 +41,7 @@ const join = (ws, clientID, gameID) => {
     sendJsonAsString(ws, payload)
 }
 
-// on these messages from the server-side WebSocket
+// client-side response for these messages emited by the server-side WebSocket
 const connect = (serverPayload) => {
     console.log('connected in the client-side', serverPayload)
 }
@@ -51,7 +52,6 @@ const create = (serverPayload) => {
 
 export const onMessageGame = {
     connect,
-    join,
     create,
 }
 
