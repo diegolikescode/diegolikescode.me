@@ -3,6 +3,8 @@ import './game-styles.css'
 import { newWebSocketConn, onMessageGame, parseStringToJson, emitCreateGame} from "@utils/game-websocket"
 import ButtonJsx from "./button"
 import { getCookie, setCookie } from "@utils/cookies"
+import { conectionOpened } from '@utils/game-websocket'
+import { useCookieValue } from "@utils/hooks/custom-hooks"
 
 /**
 ##### TODO ####
@@ -27,11 +29,10 @@ import { getCookie, setCookie } from "@utils/cookies"
  */
 
 
-const Game = function (props) {
+const Game = function () {
     console.log('rendered')
-    console.log(props)
 
-    let webSocket = {}
+    const [webSocket, setWebSocket] = useState({})
 
     const matrixW = 6
     const matrixH = 7
@@ -39,8 +40,9 @@ const Game = function (props) {
         new Array(matrixH).fill(null)
             .map(() => new Array(matrixW).fill({ball: ''}))
     )
-    const [clientID, setCliendID] = useState('')
-    const [gameID, setGameID] = useState('')
+
+    const clientID = useCookieValue('clientID')
+    const gameID = useCookieValue('gameID')
 
     const animationStyle = {
         transition: 'top 2s ease-in-out',
@@ -62,17 +64,13 @@ const Game = function (props) {
             })
         })
 
-        const cookieClientID = getCookie('clientID')
-        if(!cookieClientID) {
-            console.log('cookiezada',cookieClientID)
-            const newClientID = generateUUID()
-            // setCliendID(newClientID)
-            setCookie(newClientID)
-        }
+        const newWebSocket = newWebSocketConn('ws://localhost', '6969')
 
-        webSocket = newWebSocketConn('ws://localhost', '6969')
+        newWebSocket.addEventListener('open', _ => {
+            conectionOpened(newWebSocket, clientID)
+        })
 
-        webSocket.onmessage = (msg) => {
+        newWebSocket.onmessage = (msg) => {
             Object.keys(onMessageGame).map(onServerMessageCallback => {
                 const serverResponse = parseStringToJson(msg.data)
 
@@ -81,6 +79,7 @@ const Game = function (props) {
                 }
             })
         }
+        setWebSocket(newWebSocket)
     }, [])
 
     const handlePlayerRound = (col, playerColor) => {
@@ -96,19 +95,25 @@ const Game = function (props) {
     }
 
     const onNewGameClick = () => {
-        emitCreateGame(webSocket)
-        console.log('emited')
-
+        console.log('init')
+        emitCreateGame(webSocket, clientID)
+        console.log('end')
     }
 
     return (
         <main className="mt-16">
             <div>
-                <h1 id="clientId">ClientID: haha</h1>
-                <h1 id="gameId">
-                    press "new game" to get your game ID or Join someone else's game
-                    with "Join Game"
-                </h1>
+                <h1 id="clientId">ClientID: {clientID}</h1>
+
+                {gameID === '' ?
+                    <h1 id="gameId">
+                        press "new game" to get your game ID or Join someone else's game
+                        with "Join Game"
+                    </h1>
+                    : <h1 id="gameId">
+                        GameID: {gameID}
+                    </h1>
+                }
                 <div className="flex gap-2">
                     <input
                         type="text"

@@ -1,9 +1,13 @@
-import crypto from 'crypto'
-
 export const generateUUID = () => {
-    const buffer = crypto.randomBytes(16)
-    buffer[6] = (buffer[6] & 0x0f) | 0x40
-    buffer[8] = (buffer[8] & 0x3f) | 0x80
+    const randomHex = (length) => {
+        let result = ''
+        for (let i = 0; i < length; i++) {
+            result += Math.floor(Math.random() * 16).toString(16)
+        }
+        return result
+    }
 
-    return buffer.toString('hex').toUpperCase()
+    const newUUID = `${randomHex(8)}-${randomHex(4)}
+        -${randomHex(3)}-${randomHex(12)}`
+    return newUUID
 }

@@ -13,12 +13,17 @@ export const setCookie = (key, value, minutesToExpire = 5) => {
     document.cookie = `${key}=${value};${expDate};path=/`
 }
 
+/**
+ *
+ * @param {string} key
+ * @returns
+ */
 export const getCookie = (key) => {
-    const cookies = document.cookie.split(';')
-    for(const cookie of cookies) {
-        const [name, value] = cookie.split('=')
-        if(key === name) return value
-    }
-    return undefined
-}
+    const cookies = document.cookie.split(';').reduce((acc = {}, cookie) => {
+        const [key, value] = cookie.trim().split('=')
+        acc[key] = value
+        return acc
+    }, {})
 
+    return cookies[key]
+}
