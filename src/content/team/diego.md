@@ -1,7 +1,7 @@
 ---
 draft: false
 name: "Diego Prestes de Sousa"
-title: "Full Stack Developer"
+title: "Web Developer"
 avatar: {
     src: "show-me-the-way.png",
     alt: "diegolikescode"
