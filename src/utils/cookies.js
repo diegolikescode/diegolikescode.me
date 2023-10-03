@@ -25,5 +25,5 @@ export const getCookie = (key) => {
         return acc
     }, {})
 
-    return cookies[key]
+    return cookies[key] ?? ''
 }

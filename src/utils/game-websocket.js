@@ -40,34 +40,60 @@ export const emitCreateGame = (ws, clientID) => {
  * @description event emited only by the frontend, it signals the backend that the player (clientID) is
  * joining a game already created
  */
-const emitJoin = (ws, clientID, gameID) => {
+export const emitJoin = (ws, clientID, gameID) => {
     if (gameID === null) {
         return
     }
 
     const payload = {
         method: 'join',
-        gameID,
         clientID,
+        gameID,
+    }
+
+    sendJsonAsString(ws, payload)
+}
+
+export const emitPlayRound = (ws, gameID, fullMatrix) => {
+    if(gameID === null) {
+        return
+    }
+
+    const payload = {
+        method: 'playRound',
+        gameID,
+        fullMatrix,
     }
 
     sendJsonAsString(ws, payload)
 }
 
 // client-side response for these messages emited by the server-side WebSocket
+
 const connect = (serverPayload) => {
     console.log('connected in the client-side', serverPayload)
     setCookie('clientID', serverPayload.clientID, 5)
 }
 
 const create = (serverPayload) => {
-    console.log(serverPayload)
+    console.log('game created', serverPayload)
     setCookie('gameID', serverPayload.game.id, 5)
+}
+
+const join = (serverPayload) => {
+    console.log('event return from join game', serverPayload)
+    setCookie('gameID', serverPayload.game.id, 5)
+}
+
+const playRound = (serverPayload) => {
+    console.log(serverPayload)
 }
 
 export const onMessageGame = {
     connect,
     create,
+    join,
+    playRound,
 }
 
 /**
