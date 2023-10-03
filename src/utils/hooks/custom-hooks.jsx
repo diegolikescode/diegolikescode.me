@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState} from "react"
 import { getCookie } from '@utils/cookies'
 
 export const useCookieValue = (key) => {
-    const [cookieValue, setCookieValue] =  useState(getCookie(key))
+    const [cookie, setCookie]  =  useState(getCookie(key))
 
     useEffect(() => {
-       const handleCookieChange = () => {
-            setCookieValue(getCookie(key))
-        }
+        const intervalID = setInterval(() => {
+            const newCookieValue = getCookie(key)
 
-        window.addEventListener('cookiechange', handleCookieChange)
+            if(newCookieValue !== cookie) {
+                setCookie(newCookieValue)
+            }
+        }, 1000)
 
-        return () => {
-        window.removeEventListener('cookiechange', handleCookieChange)
-        }
+        return () => clearInterval(intervalID)
     }, [key])
 
-    return cookieValue
+    return cookie
 }
+
