@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import './game-styles.css'
-import { newWebSocketConn, onMessageGame, parseStringToJson, emitCreateGame} from "@utils/game-websocket"
+import { emitCreateGame, emitJoin, emitPlayRound} from "@utils/game-websocket"
 import ButtonJsx from "./button"
-import { getCookie, setCookie } from "@utils/cookies"
-import { conectionOpened } from '@utils/game-websocket'
-import { useCookieValue } from "@utils/hooks/custom-hooks"
+import { WebSocketProvider, useWebSocketContext } from "@utils/hooks/websocket-context"
 
 /**
 ##### TODO ####
@@ -24,7 +22,7 @@ import { useCookieValue } from "@utils/hooks/custom-hooks"
 - validate when a player has won
 
 - learn to keep state of client and game ID when refresh page (must be on some Cookie)
-    - refresh no token e reseta o clientID pra n mudar nos próximos 5mins
+
  #############
  */
 
@@ -32,7 +30,7 @@ import { useCookieValue } from "@utils/hooks/custom-hooks"
 const Game = function () {
     console.log('rendered')
 
-    const [webSocket, setWebSocket] = useState({})
+    const {webSocket, clientID, gameID} = useWebSocketContext()
 
     const matrixW = 6
     const matrixH = 7
@@ -41,14 +39,12 @@ const Game = function () {
             .map(() => new Array(matrixW).fill({ball: ''}))
     )
 
-    const clientID = useCookieValue('clientID')
-    const gameID = useCookieValue('gameID')
-
     const animationStyle = {
         transition: 'top 2s ease-in-out',
         animation: 'ball-animation 4s ease-in-out'
     }
 
+    const inputJoinGameRef = useRef('')
     const ballsTupleRef = useRef(new Array(matrixH).fill(null).map(() => new Array(matrixW).fill(null)))
     const ballsRef = useRef(new Array(matrixH).fill(null).map(() => new Array(matrixW).fill(null)))
 
@@ -63,41 +59,27 @@ const Game = function () {
                 ball?.style.setProperty('--final-pos', `${tuplePos + 8}px`)
             })
         })
-
-        const newWebSocket = newWebSocketConn('ws://localhost', '6969')
-
-        newWebSocket.addEventListener('open', _ => {
-            conectionOpened(newWebSocket, clientID)
-        })
-
-        newWebSocket.onmessage = (msg) => {
-            Object.keys(onMessageGame).map(onServerMessageCallback => {
-                const serverResponse = parseStringToJson(msg.data)
-
-                if(serverResponse.method === onServerMessageCallback) {
-                    onMessageGame[onServerMessageCallback](serverResponse)
-                }
-            })
-        }
-        setWebSocket(newWebSocket)
     }, [])
 
-    const handlePlayerRound = (col, playerColor) => {
+    const onNewGameClick = () => {
+        emitCreateGame(webSocket, clientID)
+    }
+
+    const onJoinGameClick = () => {
+        emitJoin(webSocket, clientID, inputJoinGameRef.current)
+    }
+
+    const onPlayRound = (col, playerColor) => {
         const newMatrix = [...currentMatrix]
 
         for(let h = matrixH - 1; h >= 0; h--) {
             if(newMatrix[h][col].ball == '') {
                 newMatrix[h][col] = {ball: playerColor}
                 setCurrentMatrix(newMatrix)
+                emitPlayRound(webSocket, gameID, newMatrix)
                 return
             }
         }
-    }
-
-    const onNewGameClick = () => {
-        console.log('init')
-        emitCreateGame(webSocket, clientID)
-        console.log('end')
     }
 
     return (
@@ -105,10 +87,9 @@ const Game = function () {
             <div>
                 <h1 id="clientId">ClientID: {clientID}</h1>
 
-                {gameID === '' ?
+                {!gameID?
                     <h1 id="gameId">
-                        press "new game" to get your game ID or Join someone else's game
-                        with "Join Game"
+                        GameID: "New Game" to get a GameID or "Join" someone else's game
                     </h1>
                     : <h1 id="gameId">
                         GameID: {gameID}
@@ -120,8 +101,10 @@ const Game = function () {
                         placeholder="Your game ID"
                         id="inputGameId"
                         className="rounded-md pl-2"
+                        onChange={(ev) => inputJoinGameRef.current = ev.target.value}
+                        ref={inputJoinGameRef}
                     />
-                    <ButtonJsx id="joinGameBtn" text="Join Game">Join Game</ButtonJsx>
+                    <ButtonJsx id="joinGameBtn" text="Join Game" onClick={onJoinGameClick}>Join Game</ButtonJsx>
                 </div>
                 <div className="flex gap-2 mt-2">
                     <ButtonJsx id="newGame" text="New Game" onClick={onNewGameClick}>New Game</ButtonJsx>
@@ -136,7 +119,7 @@ const Game = function () {
                                 <button
                                     key={i}
                                     className="w-14 h-14 rounded-md bg-black text-white"
-                                    onClick={() => handlePlayerRound(i, 'red')}
+                                    onClick={() => onPlayRound(i, 'red')}
                                 >
                                     ball!
                                 </button>
@@ -163,7 +146,7 @@ const Game = function () {
                             ))
                             }
                         </div>
-                        ))
+                    ))
                     }
                 </div>
             </div>
@@ -171,79 +154,11 @@ const Game = function () {
     )
 }
 
-export default Game
-
-/*
-<!--
-let clientId = null
-let gameId = null
-
-const ws = new WebSocket('ws://localhost:6969')
-document.getElementById('newGame')?.addEventListener('click', (_) => {
-    const payload = {
-        method: 'create',
-        clientId,
-    }
-
-    ws.send(JSON.stringify(payload))
-})
-
-document.getElementById('joinGameBtn')?.addEventListener('click', (_) => {
-    gameId = document.getElementById('inputGameId')?.value || ''
-    if (gameId === null) {
-        return
-    }
-
-    const payload = {
-        method: 'join',
-        gameId,
-        clientId,
-    }
-
-    ws.send(JSON.stringify(payload))
-})
-
-ws.onmessage = (msg) => {
-    const res = JSON.parse(msg.data)
-    if (res.method === 'connect') {
-        clientId = res.clientId
-        const h1ClientId = document.getElementById('clientId')
-        if (h1ClientId !== null) {
-            const phraseClient =
-                clientId !== null
-                    ? `your client ID is: ${clientId}`
-                    : 'press "new game" to get your client ID'
-            h1ClientId.innerHTML = phraseClient
-        }
-    }
-
-    if (res.method === 'create') {
-        console.log(res)
-        const h1GameId = document.getElementById('gameId')
-        gameId = res.game.id
-        if (h1GameId !== null) {
-            const phraseGame =
-                gameId !== null
-                    ? `your game ID is: ${gameId}`
-                    : 'press "new game" to get your game ID'
-            h1GameId.innerHTML = phraseGame
-            setCookie('gameId', gameId, 20)
-        }
-        fullMatrix = res.fullMatrix
-    }
-
-    if (res.method === 'join') {
-        console.log(res)
-        const h1GameId = document.getElementById('gameId')
-        setCookie(res.game.id)
-        if (h1GameId !== null) {
-            const phraseGame =
-                gameId !== null
-                    ? `your game ID is: ${gameId}`
-                    : 'press "new game" to get your game ID'
-            h1GameId.innerHTML = phraseGame
-        }
-    }
+export default () => {
+    return (
+        <WebSocketProvider>
+            <Game />
+        </WebSocketProvider>
+    )
 }
--->
-*/
+
