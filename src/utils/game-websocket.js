@@ -54,17 +54,19 @@ export const emitJoin = (ws, clientID, gameID) => {
     sendJsonAsString(ws, payload)
 }
 
-export const emitPlayRound = (ws, gameID, fullMatrix) => {
+export const emitPlayRound = (ws, gameID, clientID, fullMatrix) => {
     if(gameID === null) {
         return
     }
 
     const payload = {
         method: 'playRound',
+        clientID,
         gameID,
         fullMatrix,
     }
 
+    console.log("SENDING THEEEEESE NUTS", gameID)
     sendJsonAsString(ws, payload)
 }
 
@@ -81,19 +83,19 @@ const create = (serverPayload) => {
 }
 
 const join = (serverPayload) => {
-    console.log('event return from join game', serverPayload)
+    console.log('join game payload', serverPayload)
     setCookie('gameID', serverPayload.game.id, 5)
 }
 
-const playRound = (serverPayload) => {
-    console.log(serverPayload)
+export const playRound = (serverPayload, setMatrix) => {
+    console.log('PLAYROUND payload', serverPayload)
+    setMatrix(serverPayload.fullMatrix)
 }
 
 export const onMessageGame = {
     connect,
     create,
     join,
-    playRound,
 }
 
 /**

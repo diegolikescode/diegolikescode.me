@@ -1,43 +1,21 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import './game-styles.css'
 import { emitCreateGame, emitJoin, emitPlayRound} from "@utils/game-websocket"
 import ButtonJsx from "./button"
 import { WebSocketProvider, useWebSocketContext } from "@utils/hooks/websocket-context"
 
-/**
-##### TODO ####
-
-- when "new game" reset the matrix
-    - if there is a game, delete in the server
-    - if there is other player, he must be deleted with the game
-
-- when "exit game" reset the matrix
-    - if there is a game, delete in the server
-    - if there is other player, he must be deleted with the game
-
-- when "join game" gets the matrix as it is in the moment of the game
-
-- make both players distinct by its colors
-
-- validate when a player has won
-
-- learn to keep state of client and game ID when refresh page (must be on some Cookie)
-
- #############
- */
-
-
-const Game = function () {
+const Game = function() {
     console.log('rendered')
 
-    const {webSocket, clientID, gameID} = useWebSocketContext()
-
-    const matrixW = 6
-    const matrixH = 7
-    const [currentMatrix, setCurrentMatrix] = useState(
-        new Array(matrixH).fill(null)
-            .map(() => new Array(matrixW).fill({ball: ''}))
-    )
+    const {
+        matrixW,
+        matrixH,
+        currentMatrix,
+        setCurrentMatrix,
+        webSocket,
+        clientID,
+        gameID
+    } = useWebSocketContext()
 
     const animationStyle = {
         transition: 'top 2s ease-in-out',
@@ -61,6 +39,11 @@ const Game = function () {
         })
     }, [])
 
+    useEffect(() => {
+        setCurrentMatrix(Array(matrixH).fill(null)
+            .map(() => new Array(matrixW).fill({ball: ''})))
+    }, [gameID])
+
     const onNewGameClick = () => {
         emitCreateGame(webSocket, clientID)
     }
@@ -76,7 +59,7 @@ const Game = function () {
             if(newMatrix[h][col].ball == '') {
                 newMatrix[h][col] = {ball: playerColor}
                 setCurrentMatrix(newMatrix)
-                emitPlayRound(webSocket, gameID, newMatrix)
+                emitPlayRound(webSocket, gameID, clientID, newMatrix)
                 return
             }
         }

@@ -1,4 +1,4 @@
-import { conectionOpened, onMessageGame, parseStringToJson } from '@utils/game-websocket';
+import { conectionOpened, onMessageGame, parseStringToJson, playRound } from '@utils/game-websocket';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useContext } from 'react';
@@ -13,6 +13,14 @@ export const useWebSocketContext = () => {
 
 export const WebSocketProvider = ({ children }) => {
     const[webSocket, setWebSocket] = useState(null)
+
+    const matrixW = 6
+    const matrixH = 7
+
+    const [currentMatrix, setCurrentMatrix] = useState(
+        new Array(matrixH).fill(null)
+            .map(() => new Array(matrixW).fill({ball: ''}))
+    )
 
     const clientID = useCookieValue('clientID')
     const gameID = useCookieValue('gameID')
@@ -29,6 +37,12 @@ export const WebSocketProvider = ({ children }) => {
 
                 if(serverResponse.method === onServerMessageCallback) {
                     onMessageGame[onServerMessageCallback](serverResponse)
+                }
+
+                // needed to customize a lil' bit
+                if (serverResponse.method === "playRound") {
+                    console.log("ohhh maaa god")
+                    playRound(serverResponse, setCurrentMatrix)
                 }
             })
         }
@@ -47,7 +61,11 @@ export const WebSocketProvider = ({ children }) => {
     const contextValues = {
         webSocket,
         clientID,
-        gameID
+        gameID,
+        matrixH,
+        matrixW,
+        currentMatrix,
+        setCurrentMatrix
     }
 
     return (
