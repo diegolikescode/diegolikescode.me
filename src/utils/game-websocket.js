@@ -66,15 +66,15 @@ export const emitPlayRound = (ws, gameID, clientID, fullMatrix) => {
         fullMatrix,
     }
 
-    console.log("SENDING THEEEEESE NUTS", gameID)
     sendJsonAsString(ws, payload)
 }
 
 // client-side response for these messages emited by the server-side WebSocket
 
-const connect = (serverPayload) => {
+export const connect = (serverPayload) => {
     console.log('connected in the client-side', serverPayload)
     setCookie('clientID', serverPayload.clientID, 5)
+    return serverPayload
 }
 
 const create = (serverPayload) => {
@@ -82,20 +82,20 @@ const create = (serverPayload) => {
     setCookie('gameID', serverPayload.game.id, 5)
 }
 
-const join = (serverPayload) => {
+export const join = (serverPayload) => {
     console.log('join game payload', serverPayload)
     setCookie('gameID', serverPayload.game.id, 5)
+    return serverPayload
 }
 
 export const playRound = (serverPayload, setMatrix) => {
-    console.log('PLAYROUND payload', serverPayload)
     setMatrix(serverPayload.fullMatrix)
+    return serverPayload
 }
 
 export const onMessageGame = {
     connect,
     create,
-    join,
 }
 
 /**

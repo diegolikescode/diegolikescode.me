@@ -14,7 +14,8 @@ const Game = function() {
         setCurrentMatrix,
         webSocket,
         clientID,
-        gameID
+        gameID,
+        playerColor,
     } = useWebSocketContext()
 
     const animationStyle = {
@@ -100,9 +101,12 @@ const Game = function() {
                         new Array(matrixW).fill(null).map((_, i) => (
                             <div key={i} className="w-16 h-16 flex items-center justify-center">
                                 <button
+                                    // disabled={}
                                     key={i}
                                     className="w-14 h-14 rounded-md bg-black text-white"
-                                    onClick={() => onPlayRound(i, 'red')}
+                                    onClick={() => {
+                                        onPlayRound(i, playerColor)
+                                    }}
                                 >
                                     ball!
                                 </button>
@@ -120,7 +124,7 @@ const Game = function() {
                                     ref={el => setMatrixRef(el, idx, idxTuple, ballsTupleRef)}>
 
                                     <div key={idxTuple} id={`ball-${idx}-${idxTuple}`}
-                                        className={`w-12 h-12 bg-black rounded-full absolute ${currentMatrix[idx][idxTuple]['ball'] !== '' ? '' : 'hidden'}`}
+                                        className={`w-12 h-12 ${currentMatrix[idx][idxTuple].ball === 'red' ? 'bg-red-500' : 'bg-blue-500'} rounded-full absolute ${currentMatrix[idx][idxTuple]['ball'] !== '' ? '' : 'hidden'}`}
 
                                         style={animationStyle}
                                         ref={el => setMatrixRef(el, idx, idxTuple, ballsRef)}></div>

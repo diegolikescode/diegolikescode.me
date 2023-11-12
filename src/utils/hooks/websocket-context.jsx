@@ -1,4 +1,4 @@
-import { conectionOpened, onMessageGame, parseStringToJson, playRound } from '@utils/game-websocket';
+import { conectionOpened, connect, join, onMessageGame, parseStringToJson, playRound } from '@utils/game-websocket';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useContext } from 'react';
@@ -12,7 +12,9 @@ export const useWebSocketContext = () => {
 }
 
 export const WebSocketProvider = ({ children }) => {
-    const[webSocket, setWebSocket] = useState(null)
+    console.log('render webSocketContext')
+    const [webSocket, setWebSocket] = useState(null)
+    const [playerColor, setPlayerColor] = useState('blue')
 
     const matrixW = 6
     const matrixH = 7
@@ -39,10 +41,22 @@ export const WebSocketProvider = ({ children }) => {
                     onMessageGame[onServerMessageCallback](serverResponse)
                 }
 
+                if(serverResponse.method === 'connect') {
+                    const serverPayload = connect(serverResponse)
+                    console.log(serverPayload)
+                }
+
+                if(serverResponse.method === 'join') {
+                    const serverPayload = join(serverResponse)
+                    console.log(serverPayload)
+                    const { color } = serverPayload.game.clients.find(c => c.clientID === clientID)
+                    setPlayerColor(color)
+                }
+
                 // needed to customize a lil' bit
-                if (serverResponse.method === "playRound") {
-                    console.log("ohhh maaa god")
-                    playRound(serverResponse, setCurrentMatrix)
+                if (serverResponse.method === 'playRound') {
+                    const serverPayload = playRound(serverResponse, setCurrentMatrix)
+                    console.log('the load', serverPayload)
                 }
             })
         }
@@ -65,7 +79,8 @@ export const WebSocketProvider = ({ children }) => {
         matrixH,
         matrixW,
         currentMatrix,
-        setCurrentMatrix
+        setCurrentMatrix,
+        playerColor,
     }
 
     return (
