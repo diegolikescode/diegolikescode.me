@@ -43,7 +43,10 @@ export const WebSocketProvider = ({ children }) => {
 
                 if(serverResponse.method === 'connect') {
                     const serverPayload = connect(serverResponse)
-                    console.log(serverPayload)
+                    console.log('connect serverPayload', serverPayload)
+                    if (serverPayload.game) {
+                        setCurrentMatrix(serverPayload.game.fullMatrix)
+                    }
                 }
 
                 if(serverResponse.method === 'join') {
@@ -51,6 +54,7 @@ export const WebSocketProvider = ({ children }) => {
                     console.log(serverPayload)
                     const { color } = serverPayload.game.clients.find(c => c.clientID === clientID)
                     setPlayerColor(color)
+                    setCurrentMatrix(serverResponse.game.fullMatrix)
                 }
 
                 // needed to customize a lil' bit

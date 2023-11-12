@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import './game-styles.css'
-import { emitCreateGame, emitJoin, emitPlayRound} from "@utils/game-websocket"
+import { emitCreateGame, emitExitGame, emitJoin, emitPlayRound} from "@utils/game-websocket"
 import ButtonJsx from "./button"
 import { WebSocketProvider, useWebSocketContext } from "@utils/hooks/websocket-context"
 
@@ -38,20 +38,25 @@ const Game = function() {
                 ball?.style.setProperty('--final-pos', `${tuplePos + 8}px`)
             })
         })
+        console.log(currentMatrix)
     }, [])
-
-    useEffect(() => {
-        setCurrentMatrix(Array(matrixH).fill(null)
-            .map(() => new Array(matrixW).fill({ball: ''})))
-    }, [gameID])
 
     const onNewGameClick = () => {
         emitCreateGame(webSocket, clientID)
     }
 
+    const onExitGameClick = () => {
+        emitExitGame(webSocket, clientID)
+    }
+
     const onJoinGameClick = () => {
         emitJoin(webSocket, clientID, inputJoinGameRef.current)
     }
+
+    useEffect(() => {
+        setCurrentMatrix(Array(matrixH).fill(null)
+            .map(() => new Array(matrixW).fill({ball: ''})))
+    }, [gameID])
 
     const onPlayRound = (col, playerColor) => {
         const newMatrix = [...currentMatrix]
@@ -60,7 +65,7 @@ const Game = function() {
             if(newMatrix[h][col].ball == '') {
                 newMatrix[h][col] = {ball: playerColor}
                 setCurrentMatrix(newMatrix)
-                emitPlayRound(webSocket, gameID, clientID, newMatrix)
+                emitPlayRound(webSocket, gameID || null, clientID, newMatrix)
                 return
             }
         }
@@ -92,7 +97,7 @@ const Game = function() {
                 </div>
                 <div className="flex gap-2 mt-2">
                     <ButtonJsx id="newGame" text="New Game" onClick={onNewGameClick}>New Game</ButtonJsx>
-                    <ButtonJsx id="exitGame" text="Exit Game">Exit Game</ButtonJsx>
+                    <ButtonJsx id="exitGame" text="Exit Game" onClick={onExitGameClick}>Exit Game</ButtonJsx>
                 </div>
             </div>
             <div id="game-container" className="flex flex-col justify-center items-center mt-4">
