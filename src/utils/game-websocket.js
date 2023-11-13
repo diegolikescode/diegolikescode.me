@@ -69,6 +69,17 @@ export const emitPlayRound = (ws, gameID, clientID, fullMatrix) => {
     sendJsonAsString(ws, payload)
 }
 
+export const emitWinner = (ws, clientID, gameID, ballColor) => {
+    const payload = {
+        method: 'winner',
+        clientID,
+        gameID,
+        ballColor
+    }
+
+    sendJsonAsString(ws, payload)
+}
+
 export const emitExitGame = (ws, clientID) => {
     const payload = {
         method: 'exitGame',
@@ -81,23 +92,19 @@ export const emitExitGame = (ws, clientID) => {
 // client-side response for these messages emited by the server-side WebSocket
 
 export const connect = (serverPayload) => {
-    console.log('connected in the client-side', serverPayload)
     setCookie('clientID', serverPayload.clientID, 5)
     return serverPayload
 }
 
 const create = (serverPayload) => {
-    console.log('game created', serverPayload)
     setCookie('gameID', serverPayload.game.id, 5)
 }
 
 const exitGame = (serverPayload) => {
-    // playerID (remove de todos os games)
     setCookie('gameID', '', 69)
 }
 
 export const join = (serverPayload) => {
-    console.log('join game payload', serverPayload)
     setCookie('gameID', serverPayload.game.id, 5)
     return serverPayload
 }

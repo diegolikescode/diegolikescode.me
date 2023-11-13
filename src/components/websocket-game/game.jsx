@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import './game-styles.css'
-import { emitCreateGame, emitExitGame, emitJoin, emitPlayRound} from "@utils/game-websocket"
+import { emitCreateGame, emitExitGame, emitJoin, emitPlayRound, emitWinner} from "@utils/game-websocket"
 import ButtonJsx from "./button"
 import { WebSocketProvider, useWebSocketContext } from "@utils/hooks/websocket-context"
 
@@ -16,6 +16,8 @@ const Game = function() {
         clientID,
         gameID,
         playerColor,
+        playerTurn,
+        gameWinner,
     } = useWebSocketContext()
 
     const animationStyle = {
@@ -38,10 +40,10 @@ const Game = function() {
                 ball?.style.setProperty('--final-pos', `${tuplePos + 8}px`)
             })
         })
-        console.log(currentMatrix)
     }, [])
 
     const onNewGameClick = () => {
+        emitExitGame(webSocket, clientID)
         emitCreateGame(webSocket, clientID)
     }
 
@@ -50,6 +52,7 @@ const Game = function() {
     }
 
     const onJoinGameClick = () => {
+        emitExitGame(webSocket, clientID)
         emitJoin(webSocket, clientID, inputJoinGameRef.current)
     }
 
@@ -57,6 +60,49 @@ const Game = function() {
         setCurrentMatrix(Array(matrixH).fill(null)
             .map(() => new Array(matrixW).fill({ball: ''})))
     }, [gameID])
+
+    const checkGameWinner = () => {
+        for (let i=0; i<currentMatrix.length; i++) {
+            for (let j=0; j<currentMatrix[i].length; j++) {
+                const pos = currentMatrix[i][j]
+                if (pos.ball === '') continue
+                console.log(currentMatrix[i][j], pos.ball)
+                const ballColor = pos.ball
+
+                if(currentMatrix[i][j+1] &&
+                    currentMatrix[i][j+1].ball === ballColor &&
+                    currentMatrix[i][j+2] &&
+                    currentMatrix[i][j+2].ball === ballColor) {
+                    console.log('HORIZONTAL WINNER')
+                    emitWinner(webSocket, clientID, gameID, ballColor)
+                }
+                if (currentMatrix[i+1] &&
+                    currentMatrix[i+1][j].ball === ballColor &&
+                    currentMatrix[i+2] &&
+                    currentMatrix[i+2][j].ball === ballColor
+                ) {
+                    console.log('VERTICAL WINNER')
+                    emitWinner(webSocket, clientID, gameID, ballColor)
+                }
+                if (currentMatrix[i+1] && currentMatrix[i+1][j-1] &&
+                    currentMatrix[i+1][j-1].ball === ballColor &&
+                    currentMatrix[i+2] && currentMatrix[i+2][j-2] &&
+                    currentMatrix[i+2][j-2].ball === ballColor
+                ) {
+                    console.log('BACK-DIAGONAL WINNER')
+                    emitWinner(webSocket, clientID, gameID, ballColor)
+                }
+                if (currentMatrix[i+1] && currentMatrix[i+1][j+1] &&
+                    currentMatrix[i+1][j+1].ball === ballColor &&
+                    currentMatrix[i+2] && currentMatrix[i+2][j+2] &&
+                    currentMatrix[i+2][j+2].ball === ballColor
+                ) {
+                    console.log('FRONT-DIAGONAL WINNER')
+                    emitWinner(webSocket, clientID, gameID, ballColor)
+                }
+            }
+        }
+    }
 
     const onPlayRound = (col, playerColor) => {
         const newMatrix = [...currentMatrix]
@@ -66,9 +112,10 @@ const Game = function() {
                 newMatrix[h][col] = {ball: playerColor}
                 setCurrentMatrix(newMatrix)
                 emitPlayRound(webSocket, gameID || null, clientID, newMatrix)
-                return
+                break
             }
         }
+        checkGameWinner()
     }
 
     return (
@@ -101,12 +148,35 @@ const Game = function() {
                 </div>
             </div>
             <div id="game-container" className="flex flex-col justify-center items-center mt-4">
+                <h3 className={`font-bold text-lg`} >
+                    Your balls are {' '}
+                    <p className={`inline-block ${playerColor === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
+                        {playerColor}
+                    </p>
+                </h3>
+                <h3 className={`font-bold text-lg`} >
+                    PLAYER TURN: {' '}
+                    <p className={`inline-block ${playerTurn === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
+                        {playerTurn}
+                    </p>
+                </h3>
+                {gameWinner !== '??' ? (
+                    <h3 className={`font-bold text-lg`} >
+                        WINNER HAVE <p className={`inline-block ${gameWinner === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
+                            {gameWinner.toUpperCase()}
+                        </p> BALLS
+                    </h3>
+                ) : (
+                        <h3 className={`font-bold text-lg`} >
+                            THE GAME IS ON!
+                        </h3>
+                    )}
                 <div className="flex flex-row justify-center items-center w-full between mb-1">
                     {
                         new Array(matrixW).fill(null).map((_, i) => (
                             <div key={i} className="w-16 h-16 flex items-center justify-center">
                                 <button
-                                    // disabled={}
+                                    disabled={playerColor !== playerTurn && gameID}
                                     key={i}
                                     className="w-14 h-14 rounded-md bg-black text-white"
                                     onClick={() => {

@@ -13,8 +13,11 @@ export const useWebSocketContext = () => {
 
 export const WebSocketProvider = ({ children }) => {
     console.log('render webSocketContext')
+
     const [webSocket, setWebSocket] = useState(null)
     const [playerColor, setPlayerColor] = useState('blue')
+    const [playerTurn, setPlayerTurn] = useState('??')
+    const [gameWinner, setGameWinner] = useState('??')
 
     const matrixW = 6
     const matrixH = 7
@@ -43,24 +46,31 @@ export const WebSocketProvider = ({ children }) => {
 
                 if(serverResponse.method === 'connect') {
                     const serverPayload = connect(serverResponse)
-                    console.log('connect serverPayload', serverPayload)
                     if (serverPayload.game) {
                         setCurrentMatrix(serverPayload.game.fullMatrix)
+                        setPlayerTurn(serverPayload.game.playerTurn)
+                        const { color } = serverPayload.game.clients.find(c => c.clientID === clientID)
+                        setPlayerColor(color)
                     }
                 }
 
                 if(serverResponse.method === 'join') {
                     const serverPayload = join(serverResponse)
-                    console.log(serverPayload)
                     const { color } = serverPayload.game.clients.find(c => c.clientID === clientID)
                     setPlayerColor(color)
                     setCurrentMatrix(serverResponse.game.fullMatrix)
+                    setPlayerTurn(serverResponse.game.playerTurn)
                 }
 
                 // needed to customize a lil' bit
                 if (serverResponse.method === 'playRound') {
-                    const serverPayload = playRound(serverResponse, setCurrentMatrix)
-                    console.log('the load', serverPayload)
+                    playRound(serverResponse, setCurrentMatrix)
+                    setPlayerTurn(serverResponse.game.playerTurn)
+                }
+
+                if (serverResponse.method === 'winner') {
+                    console.log('WE GOT A WINNER MA BOE', serverResponse)
+                    setGameWinner(serverResponse.winnerColor)
                 }
             })
         }
@@ -85,6 +95,8 @@ export const WebSocketProvider = ({ children }) => {
         currentMatrix,
         setCurrentMatrix,
         playerColor,
+        playerTurn,
+        gameWinner,
     }
 
     return (
