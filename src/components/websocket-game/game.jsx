@@ -148,6 +148,13 @@ const Game = function() {
                 </div>
             </div>
             <div id="game-container" className="flex flex-col justify-center items-center mt-4">
+                <span class="">
+                    <span class="bg-[#191724] p-1 rounded-md justify-center">
+                        <span class="font-bold text-lg text-[#fe8fb0]">npx </span>
+                        <span class="font-bold text-lg text-[#e0def4]">websocket-multiplayer-game</span>
+                    </span>
+                    <span class="font-light text-lg"> to start the WebSocket server</span>
+                </span>
                 <h3 className={`font-bold text-lg`} >
                     Your balls are {' '}
                     <p className={`inline-block ${playerColor === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
