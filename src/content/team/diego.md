@@ -1,6 +1,6 @@
 ---
 draft: false
-name: "Diego Prestes de Sousa"
+name: "diegolikescode"
 title: "Web Developer"
 avatar: {
     src: "show-me-the-way.png",

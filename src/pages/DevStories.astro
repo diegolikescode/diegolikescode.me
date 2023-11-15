@@ -14,8 +14,6 @@ const publishedBlogEntries = await getCollection('work', ({ data }) => {
 publishedBlogEntries.sort(function (a, b) {
     return b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 })
-
-// the idea is to see my GitHub projects and extract the most out of what I already have done.
 ---
 
 <Layout title="Work">
@@ -52,14 +50,15 @@ publishedBlogEntries.sort(function (a, b) {
                                         <h2 class="text-3xl font-semibold leading-snug tracking-tight mt-1 ">
                                             {blogPostEntry.data.title}
                                         </h2>
-
                                         <div class="flex gap-2 mt-3">
+                                            {/*
                                             <span class="text-gray-400">
                                                 {blogPostEntry.data.author}
                                             </span>
                                             <span class="text-gray-400">
                                                 •{' '}
                                             </span>
+                                            */}
                                             <time
                                                 class="text-gray-400"
                                                 datetime={blogPostEntry.data.publishDate.toISOString()}>
