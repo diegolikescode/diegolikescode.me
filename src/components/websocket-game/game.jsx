@@ -121,15 +121,15 @@ const Game = function() {
     return (
         <main className="mt-16">
             <div>
-                <h1 id="clientId">ClientID: {clientID}</h1>
+                <h5 className="leading-tight" id="clientId">ClientID: {clientID ? clientID : 'run the npx command bellow to run the websocket server and get your ClientID'}</h5>
 
                 {!gameID?
-                    <h1 id="gameId">
+                    <h5 id="gameId">
                         GameID: "New Game" to get a GameID or "Join" someone else's game
-                    </h1>
-                    : <h1 id="gameId">
+                    </h5>
+                    : <h5 className="leading-1" id="gameId">
                         GameID: {gameID}
-                    </h1>
+                    </h5>
                 }
                 <div className="flex gap-2">
                     <input
@@ -147,36 +147,36 @@ const Game = function() {
                     <ButtonJsx id="exitGame" text="Exit Game" onClick={onExitGameClick}>Exit Game</ButtonJsx>
                 </div>
             </div>
-            <div id="game-container" className="flex flex-col justify-center items-center mt-4">
-                <span class="">
-                    <span class="bg-[#191724] p-1 rounded-md justify-center">
-                        <span class="font-bold text-lg text-[#fe8fb0]">npx </span>
-                        <span class="font-bold text-lg text-[#e0def4]">websocket-multiplayer-game</span>
+            <div id="game-container" className="flex flex-col gap-1 justify-center items-center mt-4">
+                <span className="">
+                    <span className="bg-[#191724] p-1 rounded-md justify-center">
+                        <span className="font-bold text-lg text-[#fe8fb0]">npx </span>
+                        <span className="font-bold text-lg text-[#e0def4]">websocket-multiplayer-game</span>
                     </span>
-                    <span class="font-light text-lg"> to start the WebSocket server</span>
+                    <span className="font-light text-lg"> to start the WebSocket server</span>
                 </span>
-                <h3 className={`font-bold text-lg`} >
+                <p className={`font-bold text-lg mt-0 mb-0 leading-relaxed`} >
                     Your balls are {' '}
-                    <p className={`inline-block ${playerColor === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
+                    <span className={`inline-block text-lg mt-0 mb-0 leading-[0.8] ${playerColor === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
                         {playerColor}
-                    </p>
-                </h3>
-                <h3 className={`font-bold text-lg`} >
+                    </span>
+                </p>
+                <p className={`font-bold text-lg mt-0 mb-0 leading-relaxed`} >
                     PLAYER TURN: {' '}
-                    <p className={`inline-block ${playerTurn === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
+                    <span className={`inline-block text-lg mt-0 mb-0 leading-[0.8] ${playerTurn === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
                         {playerTurn}
-                    </p>
-                </h3>
+                    </span>
+                </p>
                 {gameWinner !== '??' ? (
-                    <h3 className={`font-bold text-lg`} >
-                        WINNER HAVE <p className={`inline-block ${gameWinner === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
+                    <p className={`font-bold text-lg mt-0 mb-0 leading-relaxed`} >
+                        WINNER HAVE <p className={`inline-block text-lg mt-0 mb-0 leading-[0.8] ${gameWinner === 'blue' ? 'text-blue-500' : 'text-red-500'}`}>
                             {gameWinner.toUpperCase()}
                         </p> BALLS
-                    </h3>
+                    </p>
                 ) : (
-                        <h3 className={`font-bold text-lg`} >
+                        <p className={`font-bold text-lg mt-0 mb-0 leading-relaxed`} >
                             THE GAME IS ON!
-                        </h3>
+                        </p>
                     )}
                 <div className="flex flex-row justify-center items-center w-full between mb-1">
                     {
