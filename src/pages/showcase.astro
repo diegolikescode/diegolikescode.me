@@ -19,7 +19,7 @@ publishedBlogEntries.sort(function (a, b) {
 <Layout title="Work">
     <Container>
         <Sectionhead>
-            <Fragment slot="title">DevStories</Fragment> {/* TODO: change this crap? */}
+            <Fragment slot="title">Showcase</Fragment>
             <Fragment slot="desc"></Fragment>
         </Sectionhead>
         <main class="mt-16">
@@ -27,7 +27,7 @@ publishedBlogEntries.sort(function (a, b) {
                 {
                     publishedBlogEntries.map((blogPostEntry, index) => (
                         <li>
-                            <a href={`/DevStories/${blogPostEntry.slug}`}>
+                            <a href={`/showcase/${blogPostEntry.slug}`}>
                                 <div class="grid md:grid-cols-2 gap-5 md:gap-10 items-center">
                                     <Picture
                                         src={blogPostEntry.data.image.src}
