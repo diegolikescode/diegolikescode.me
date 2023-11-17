@@ -1,0 +1,9 @@
+@keyframes ball-animation {
+    0% {
+        top: -50px;
+    }
+    100% {
+        /* dinamic, based on the final position of each ball */
+        top: var(--final-pos, 100px);
+    }
+}
