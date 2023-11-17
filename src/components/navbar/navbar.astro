@@ -6,6 +6,7 @@ import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
 import { Image } from "@astrojs/image/components";
 
 import GithubLogo from "../../assets/github-logo.svg";
+import ShowcaseGif from "../../assets/showcase.gif";
 import LinkedIn from "../../assets/linkedin-logo.svg";
 import Twitter from "../../assets/twitter-logo.svg";
 
@@ -32,6 +33,7 @@ const menuitems = [
     title: "Showcase",
     path: "/showcase",
     customCSS: "showcase",
+    customImg: ShowcaseGif
   },
   {
     title: "Contact",
@@ -86,7 +88,7 @@ const menuitems = [
                 </div>
             </div>
             <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
-                <ul class="flex flex-col lg:flex-row lg:gap-3">
+                <ul class="flex flex-col lg:flex-row lg:gap-3 items-center">
                     {
                     menuitems.map(item => (
                         <>
@@ -94,12 +96,18 @@ const menuitems = [
                                 <a
                                     id={item.path}
                                     href={item.path}
-                                    class={`flex lg:px-3 py-2 text-gray-600 hover:text-gray-900`}
+                                    class={`flex lg:px-3 py-2 text-gray-600 hover:text-gray-900 ${item.customCSS ? 'text-orange-500 text-lg font-display animate-pulse hover:text-orange-600' : ''}`}
                                     // text-shadow: rgb(204 51 204 / 50%) 5px 0px 6px, rgb(51 204 166 / 50%) -4px 0px 2px, rgb(92 135 214) 10px 0px 8px;
-                                    style={`${item.customCSS ? 'font-weight: bold; text-shadow: #ff5349 1px 0px 8px;' : ''}`}
+                                    style={`${item.customCSS ? 'font-weight: bold;' : ''}`}
+                                    //style={`${item.customCSS ? 'font-weight: bold; text-shadow: #ff5349 1px 0px 8px;' : ''}`}
                                 >
                                     {item.title}
                                 </a>
+                                {item.customImg !== undefined && item.path === '/showcase' && (
+                                    <div id="img-showcase" class="absolute" style="pointer-events: none;">
+                                        <Image src={ShowcaseGif} class={'hidden z-50'} alt="cool-showcase-animation" height={180} width={180}/>
+                                    </div>
+                                )}
                             </li>
                         </>
                     ))
@@ -130,11 +138,30 @@ const menuitems = [
 </Container>
 
 <script>
-document.getElementById("/showcase")?.addEventListener('mouseover', function () {
-    console.log('ITS ON, BABY')
-})
+document.addEventListener('DOMContentLoaded', function () {
+    const showcaseImg = document.getElementById('img-showcase')
 
-document.getElementById("/showcase")?.addEventListener('mouseout', function () {
-    console.log('ITS OFF, BABY')
+    if (showcaseImg) {
+        const parent = showcaseImg.parentElement
+        const img = showcaseImg.querySelector('img')
+
+        parent?.addEventListener('mousemove', function (ev) {
+            const rect = parent.getBoundingClientRect()
+            const x = ev.clientX - rect.left
+            const y = ev.clientY - rect.top - 50
+
+            if(img) {
+                img.classList.remove('hidden')
+                img.style.transform = `translate(${x}px, ${y}px)`
+            }
+        })
+
+        parent?.addEventListener('mouseleave', function() {
+            if(img) {
+                img.classList.add('hidden')
+                img.style.transform = 'translate(0, 0)'
+            }
+        })
+    }
 })
 </script>
