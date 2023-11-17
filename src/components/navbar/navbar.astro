@@ -31,6 +31,7 @@ const menuitems = [
   {
     title: "Showcase",
     path: "/showcase",
+    customCSS: "showcase",
   },
   {
     title: "Contact",
@@ -82,25 +83,29 @@ const menuitems = [
         </div>
         <div class="block lg:hidden">
           <MenuIcon class="w-4 h-4 text-gray-800" />
-        </div>
-      </div>
-      <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
-        <ul class="flex flex-col lg:flex-row lg:gap-3">
-          {
-            menuitems.map((item, index) => (
-              <>
-                <li>
-                  <a
-                    href={item.path}
-                    class="flex lg:px-3 py-2 text-gray-600 hover:text-gray-900">
-                    {item.title}
-                  </a>
-                </li>
-              </>
-            ))
-          }
-        </ul>
-      </MenuItems>
+                </div>
+            </div>
+            <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
+                <ul class="flex flex-col lg:flex-row lg:gap-3">
+                    {
+                    menuitems.map(item => (
+                        <>
+                            <li>
+                                <a
+                                    id={item.path}
+                                    href={item.path}
+                                    class={`flex lg:px-3 py-2 text-gray-600 hover:text-gray-900`}
+                                    // text-shadow: rgb(204 51 204 / 50%) 5px 0px 6px, rgb(51 204 166 / 50%) -4px 0px 2px, rgb(92 135 214) 10px 0px 8px;
+                                    style={`${item.customCSS ? 'font-weight: bold; text-shadow: #ff5349 1px 0px 8px;' : ''}`}
+                                >
+                                    {item.title}
+                                </a>
+                            </li>
+                        </>
+                    ))
+                    }
+                </ul>
+            </MenuItems>
     </Astronav>
     <div>
       <div class="hidden lg:flex items-center gap-4">
@@ -123,3 +128,13 @@ const menuitems = [
     </div>
   </header>
 </Container>
+
+<script>
+document.getElementById("/showcase")?.addEventListener('mouseover', function () {
+    console.log('ITS ON, BABY')
+})
+
+document.getElementById("/showcase")?.addEventListener('mouseout', function () {
+    console.log('ITS OFF, BABY')
+})
+</script>
