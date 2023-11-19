@@ -1,5 +1,3 @@
-// import {Server} from 'ws'
-
 import { setCookie } from './cookies'
 
 /**
