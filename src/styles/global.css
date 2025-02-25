@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=Press+Start+2P&display=swap");
+
+body {
+    background-color: #181820;
+}
+
+h1, h2, h3 {
+    color: #98BB6C;
+}
+
+p, a, span {
+    color: #98BB6C;
+}
+
+svg {
+    color: #98BB6C;
+}
