@@ -1,167 +1,85 @@
 ---
 import Container from "@components/container.astro";
-import Link from "@components/ui/link.astro";
-import Dropdown from "./dropdown.astro";
-import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
+import { Astronav } from "astro-navbar";
 import { Image } from "@astrojs/image/components";
 
-import GithubLogo from "../../assets/github-logo.svg";
-import ShowcaseGif from "../../assets/showcase.gif";
-import LinkedIn from "../../assets/linkedin-logo.svg";
-import Twitter from "../../assets/twitter-logo.svg";
+import GitHub from "../../assets/github.png";
+import LinkedIn from "../../assets/linkedin.png";
+import Twitter from "../../assets/twitter.png";
 
-const menuitems = [
-  {
-    // title: "Features",
-    // path: "#",
-    // children: [
-    //   { title: "Action", path: "/" },
-    //   { title: "Another action", path: "#" },
-    //   { title: "Dropdown Submenu", path: "#" },
-    //   { title: "404 Page", path: "/404" },
-    // ],
-  },
-  // {
-  //   title: "Process (TODO: future)",
-  //   path: "/pricing",
-  // },
-  {
-    title: "About",
-    path: "/about",
-  },
-  {
-    title: "Showcase",
-    path: "/showcase",
-    customCSS: "showcase",
-    customImg: ShowcaseGif
-  },
-  {
-    title: "Contact",
-    path: "/contact",
-  },
-];
-
-// {item.children && (
-//   <Dropdown
-//     title={item.title}
-//     children={item.children}
-//     lastItem={index === menuitems.length - 1}
-//   />
-// )}
 ---
 
 <Container>
-  <header class="flex flex-col lg:flex-row justify-between items-center my-5">
-    <Astronav>
-      <div class="flex w-full lg:w-auto items-center justify-between">
-        <div></div>
-        <div class="flex flex-col">
-          <a href="/" class="text-lg"
-            ><span class="font-bold text-slate-800 text-2xl"
-              >diegolikescode</span
-            >
-            <div class="flex gap-4">
-              <a
-                class="lg:hidden"
-                href="https://github.com/diegolikescode"
-                target="_blank">
-                <Image src={GithubLogo} alt="GitHub-profile-web-development" />
-              </a>
-              <a
-                class="lg:hidden"
-                href="https://twitter.com/diegolikescode"
-                target="_blank">
-                <Image src={Twitter} alt="my Twitter profile" />
-              </a>
-              <a
-                class="lg:hidden"
-                href="https://www.linkedin.com/in/diegolikescode/"
-                target="_blank">
-                <Image src={LinkedIn} alt="my LinkedIn profile" />
-              </a>
-            </div>
-          </a>
-          <!-- <span class="text-slate-500">code</span> -->
-        </div>
-        <div class="block lg:hidden">
-          <MenuIcon class="w-4 h-4 text-gray-800" />
+    <header class="flex flex-col lg:flex-row justify-between items-center my-5">
+        <Astronav>
+            <div class="flex w-full lg:w-auto items-center justify-center">
+                <div></div>
+                <div class="flex flex-col">
+                    <a href="/" class="text-lg"><span class="font-bold text-2xl">diegolikescode</span></a>
+                    <div class="flex gap-4">
+                        <a
+                            class="lg:hidden"
+                            href="https://github.com/diegolikescode"
+                            target="_blank">
+                            <Image class="w-14" src={GitHub} alt="my Twitter profile" />
+                        </a>
+                        <a
+                            class="lg:hidden"
+                            href="https://twitter.com/diegolikescode"
+                            target="_blank">
+                            <Image class="w-14" src={Twitter} alt="my Twitter profile" />
+                        </a>
+                        <a
+                            class="lg:hidden"
+                            href="https://www.linkedin.com/in/diegolikescode/"
+                            target="_blank">
+                            <Image class="w-14" src={LinkedIn} alt="my LinkedIn profile" />
+                        </a>
+                    </div>
                 </div>
             </div>
-            <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
-                <ul class="flex flex-col lg:flex-row lg:gap-3 items-center">
-                    {
-                    menuitems.map(item => (
-                        <>
-                            <li>
-                                <a
-                                    id={item.path}
-                                    href={item.path}
-                                    class={`flex lg:px-3 py-2 text-gray-600 hover:text-gray-900 ${item.customCSS ? 'text-orange-500 text-lg font-display animate-pulse hover:text-orange-600' : ''}`}
-                                    // text-shadow: rgb(204 51 204 / 50%) 5px 0px 6px, rgb(51 204 166 / 50%) -4px 0px 2px, rgb(92 135 214) 10px 0px 8px;
-                                    style={`${item.customCSS ? 'font-weight: bold;' : ''}`}
-                                    //style={`${item.customCSS ? 'font-weight: bold; text-shadow: #ff5349 1px 0px 8px;' : ''}`}
-                                >
-                                    {item.title}
-                                </a>
-                                {item.customImg !== undefined && item.path === '/showcase' && (
-                                    <div id="img-showcase" class="absolute" style="pointer-events: none;">
-                                        <Image src={ShowcaseGif} class={'hidden z-50'} alt="cool-showcase-animation" height={180} width={180}/>
-                                    </div>
-                                )}
-                            </li>
-                        </>
-                    ))
-                    }
-                </ul>
-            </MenuItems>
-    </Astronav>
-    <div>
-      <div class="hidden lg:flex items-center gap-4">
-        <a href="https://github.com/diegolikescode" target="_blank">
-          <Image src={GithubLogo} alt="my GitHub profile" />
-        </a>
-        <a href="https://twitter.com/diegolikescode" target="_blank">
-          <Image src={Twitter} alt="my Twitter profile" />
-        </a>
-        <a href="https://www.linkedin.com/in/diegolikescode/" target="_blank">
-          <Image src={LinkedIn} alt="my LinkedIn profile" />
-        </a>
-        <!-- <Link href="#" size="md">
-          <Image src={Twitter} alt='my Twitter profile' />
-        </Link>
-        <Link href="#" size="md">
-          <Image src={LinkedIn} alt='my LinkedIn profile'/>
-        </Link> -->
-      </div>
-    </div>
-  </header>
+        </Astronav>
+        <div>
+            <div class="hidden lg:flex items-center gap-4">
+                <a href="https://github.com/diegolikescode" target="_blank">
+                    <Image class="w-14" src={GitHub} alt="my Twitter profile" />
+                </a>
+                <a href="https://twitter.com/diegolikescode" target="_blank">
+                    <Image class="w-14" src={Twitter} alt="my Twitter profile" />
+                </a>
+                <a href="https://www.linkedin.com/in/diegolikescode/" target="_blank">
+                    <Image class="w-14" src={LinkedIn} alt="my LinkedIn profile" />
+                </a>
+            </div>
+        </div>
+    </header>
 </Container>
 
-<script>
+<!-- <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const showcaseImg = document.getElementById('img-showcase')
+const showcaseImg = document.getElementById('img-showcase')
 
-    if (showcaseImg) {
-        const parent = showcaseImg.parentElement
-        const img = showcaseImg.querySelector('img')
+if (showcaseImg) {
+const parent = showcaseImg.parentElement
+const img = showcaseImg.querySelector('img')
 
-        parent?.addEventListener('mousemove', function (ev) {
-            const rect = parent.getBoundingClientRect()
-            const x = ev.clientX - rect.left
-            const y = ev.clientY - rect.top - 50
+parent?.addEventListener('mousemove', function (ev) {
+const rect = parent.getBoundingClientRect()
+const x = ev.clientX - rect.left
+const y = ev.clientY - rect.top - 50
 
-            if(img) {
-                img.classList.remove('hidden')
-                img.style.transform = `translate(${x}px, ${y}px)`
-            }
-        })
-
-        parent?.addEventListener('mouseleave', function() {
-            if(img) {
-                img.classList.add('hidden')
-                img.style.transform = 'translate(0, 0)'
-            }
-        })
-    }
+if(img) {
+img.classList.remove('hidden')
+img.style.transform = `translate(${x}px, ${y}px)`
+}
 })
-</script>
+
+parent?.addEventListener('mouseleave', function() {
+if(img) {
+img.classList.add('hidden')
+img.style.transform = 'translate(0, 0)'
+}
+})
+}
+})
+</script> -->

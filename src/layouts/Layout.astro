@@ -2,7 +2,8 @@
 import { SEO } from 'astro-seo'
 import Footer from '@components/footer.astro'
 import Navbar from '@components/navbar/navbar.astro'
-import '@fontsource-variable/inter/index.css'
+// import '@fontsource-variable/inter/index.css'
+import '../styles/global.css'
 
 export interface Props {
     title: string
@@ -22,10 +23,9 @@ const makeTitle = title ? title + ' | ' + 'diegolikescode' : 'diegolikescode'
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/svg+xml" href="/astronaut.svg" />
+        <link rel="icon" type="image/svg+xml" href="/mcpoze.jpg" />
         <meta name="generator" content={Astro.generator} />
 
-        <!-- <link rel="preload" as="image" href={src} alt="Hero" /> -->
         <SEO
             title={makeTitle}
             description="Diego, a web developer who do freelance work for clients all around the world."
@@ -53,8 +53,6 @@ const makeTitle = title ? title + ' | ' + 'diegolikescode' : 'diegolikescode'
         <slot />
         <Footer />
         <style is:global>
-            /* Improve Page speed */
-            /* https://css-tricks.com/almanac/properties/c/content-visibility/ */
             img {
                 content-visibility: auto;
             }
